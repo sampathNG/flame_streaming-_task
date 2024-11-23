@@ -1,7 +1,6 @@
 asgiref==3.8.1
 betterpath==0.2.2
 click==8.1.7
-command-not-found==0.3
 constantly==23.10.4
 cryptography==43.0.3
 cupshelpers==1.0
