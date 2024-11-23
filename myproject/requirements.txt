@@ -9,7 +9,6 @@ cffi==1.17.1
 channels==3.0.0
 channels_redis==4.2.1
 chardet==4.0.0
-chrome-gnome-shell==0.0.0
 command-not-found==0.3
 constantly==23.10.4
 cryptography==43.0.3
