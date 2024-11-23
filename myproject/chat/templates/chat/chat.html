@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One-on-One Chat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+      }
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        height: 100vh;
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: scroll;
+        border-bottom: 1px solid #ddd;
+      }
+      .message {
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        background-color: #f1f1f1;
+      }
+      .message.self {
+        background-color: #d1f8d1;
+        align-self: flex-end;
+      }
+      .message.other {
+        background-color: #f1f1f1;
+        align-self: flex-start;
+      }
+      .input-container {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+      }
+      .input-container input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 20px;
+        margin-right: 10px;
+        font-size: 16px;
+      }
+      .input-container button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+      .input-container button:disabled {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="messages" id="messages"></div>
+      <div class="input-container">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendButton" disabled>Send</button>
+      </div>
+    </div>
+
+    <script>
+      const userId = "user1"; // Current user's ID
+      const recipientId = "user2"; // The recipient's ID
+      const wsUrl = `ws://127.0.0.1:8000/ws/chat/individual/${recipientId}/`;
+
+      const messageInput = document.getElementById("messageInput");
+      const sendButton = document.getElementById("sendButton");
+      const messagesDiv = document.getElementById("messages");
+
+      const socket = new WebSocket(wsUrl);
+
+      socket.onopen = function () {
+        console.log("Connected to WebSocket for one-on-one chat.");
+      };
+
+      socket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        displayMessage(data.message, "other");
+      };
+
+      socket.onclose = function () {
+        console.log("Disconnected from WebSocket.");
+      };
+
+      socket.onerror = function (error) {
+        console.error("WebSocket Error:", error);
+      };
+
+      function displayMessage(message, sender) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", sender);
+        messageDiv.textContent = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to bottom
+      }
+
+      messageInput.addEventListener("input", function () {
+        sendButton.disabled = messageInput.value.trim() === "";
+      });
+
+      sendButton.addEventListener("click", function () {
+        const message = messageInput.value.trim();
+        if (message) {
+          displayMessage(message, "self");
+          socket.send(
+            JSON.stringify({
+              message: message,
+              recipient_id: recipientId,
+            })
+          );
+          messageInput.value = "";
+          sendButton.disabled = true;
+        }
+      });
+    </script>
+  </body>
+</html>
