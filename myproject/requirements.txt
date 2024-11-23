@@ -15,7 +15,6 @@ gunicorn==23.0.0
 hyperlink==21.0.0
 importlib-metadata==4.6.4
 incremental==24.7.2
-language-selector==0.1
 mongoengine==0.29.1
 more-itertools==8.10.0
 msgpack==1.1.0
